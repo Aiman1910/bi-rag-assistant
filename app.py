@@ -11,7 +11,7 @@ st.set_page_config(page_title="Business Intelligence RAG Assistant", page_icon="
 
 DATA_DIR = Path(__file__).parent  # PDFs/CSVs are searched for anywhere in the repo
 MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash")
-FALLBACK_MODEL = os.environ.get("GEMINI_FALLBACK_MODEL", "gemini-3.8-flash-lite")
+FALLBACK_MODEL = os.environ.get("GEMINI_FALLBACK_MODEL", "gemini-3.5-flash")
 MODELS = [MODEL_NAME, FALLBACK_MODEL]
 
 
@@ -43,17 +43,23 @@ except Exception as e:
 
 
 def answer_with_retry(question, retries=4):
+    last_error = None
     for model in MODELS:
         for attempt in range(retries):
             try:
                 return rag.answer_question(client, model, chunks, embeddings, question)
             except Exception as e:
+                last_error = e
                 msg = str(e)
                 if "503" in msg or "UNAVAILABLE" in msg or "429" in msg:
                     time.sleep(3 * (attempt + 1))  # 3s, 6s, 9s, 12s
                     continue
+                if "404" in msg or "NOT_FOUND" in msg:
+                    break  # model doesn't exist, try the next one
                 raise
-    return "The AI service is busy right now. Please try again in a minute."
+    if last_error:
+        return "The AI service is busy right now. Please try again in a minute."
+    return "No answer was generated."
 
 
 st.title("📊 Business Intelligence RAG Assistant")
@@ -80,9 +86,6 @@ with st.sidebar:
     if st.button("Clear chat", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
-    if st.button("List models", use_container_width=True):
-        for m in client.models.list():
-            st.write(m.name)
 
 for m in st.session_state.messages:
     with st.chat_message(m["role"]):
