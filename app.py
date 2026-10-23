@@ -84,3 +84,10 @@ if question:
                 answer = f"Sorry, the request failed: {e}"
         st.markdown(answer)
     st.session_state.messages.append({"role": "assistant", "content": answer})
+
+with st.sidebar:
+    if st.button("List models"):
+        for m in client.models.list():
+            st.write(m.name)
+
+
