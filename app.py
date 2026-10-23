@@ -42,7 +42,7 @@ except Exception as e:
     st.stop()
 
 
-def answer_with_retry(question, retries=4):
+def answer_with_retry(question, retries=2):
     last_error = None
     for model in MODELS:
         for attempt in range(retries):
@@ -52,7 +52,7 @@ def answer_with_retry(question, retries=4):
                 last_error = e
                 msg = str(e)
                 if "503" in msg or "UNAVAILABLE" in msg or "429" in msg:
-                    time.sleep(3 * (attempt + 1))  # 3s, 6s, 9s, 12s
+                    time.sleep(2 * (attempt + 1))  # 2s, 4s
                     continue
                 if "404" in msg or "NOT_FOUND" in msg:
                     break  # model doesn't exist, try the next one
