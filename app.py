@@ -9,7 +9,8 @@ import rag
 st.set_page_config(page_title="Business Intelligence RAG Assistant", page_icon="📊")
 
 DATA_DIR = Path(__file__).parent  # PDFs/CSVs are searched for anywhere in the repo
-MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash")
+
 
 
 def get_api_key():
