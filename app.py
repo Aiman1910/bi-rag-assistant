@@ -196,8 +196,7 @@ with st.sidebar:
     )
     st.markdown(
         f"""
-<div class="stat"><div class="v">{n_sources}</div><div class="l">Source files indexed</div></div>
-<div class="stat"><div class="v">{n_passages:,}</div><div class="l">Searchable passages</div></div>
+
 <div class="side-label">About</div>
 <div class="note">Answers are generated from your CSV datasets and PDF reports. Every response lists the sources it used.</div>
 <div class="side-label">Conversation</div>
