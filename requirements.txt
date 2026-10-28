@@ -1,7 +1,5 @@
-gradio
+streamlit
 google-genai
 pymupdf
 pandas
 numpy
-sentence-transformers
-faiss-cpu
