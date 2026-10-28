@@ -16,8 +16,17 @@ st.set_page_config(
 )
 
 DATA_DIR = Path(__file__).parent
-CSV_DIR = DATA_DIR / "data" / "csv"
-PDF_DIR = DATA_DIR / "data" / "pdf"
+
+
+def find_files(ext):
+    """Find files by extension anywhere in the repo (same idea as rag.py's rglob)."""
+    found = []
+    for p in DATA_DIR.rglob("*"):
+        if p.is_file() and p.suffix.lower() == f".{ext}":
+            rel_parts = p.relative_to(DATA_DIR).parts
+            if not any(part.startswith(".") for part in rel_parts):
+                found.append(p)
+    return sorted(found)
 
 MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash")
 FALLBACK_MODEL = os.environ.get("GEMINI_FALLBACK_MODEL", "gemini-3.5-flash")
@@ -92,9 +101,9 @@ def human_size(num_bytes):
 
 # ---------------------------------------------------------- page: data explorer
 def csv_tab():
-    files = sorted(CSV_DIR.glob("*.csv"))
+    files = find_files("csv")
     if not files:
-        st.info("No CSV files found in data/csv.")
+        st.info("No CSV files found in the repo.")
         return
 
     choice = st.selectbox("Choose a CSV file", files, format_func=lambda p: p.name)
@@ -143,9 +152,9 @@ def csv_tab():
 
 
 def pdf_tab():
-    files = sorted(PDF_DIR.glob("*.pdf"))
+    files = find_files("pdf")
     if not files:
-        st.info("No PDF files found in data/pdf.")
+        st.info("No PDF files found in the repo.")
         return
 
     choice = st.selectbox("Choose a PDF report", files, format_func=lambda p: p.name)
@@ -179,8 +188,8 @@ def data_page():
     hero("🗂️ Data Explorer", "Browse every CSV dataset and PDF report the assistant uses.")
 
     m1, m2 = st.columns(2)
-    m1.metric("CSV datasets", len(list(CSV_DIR.glob("*.csv"))))
-    m2.metric("PDF reports", len(list(PDF_DIR.glob("*.pdf"))))
+    m1.metric("CSV datasets", len(find_files("csv")))
+    m2.metric("PDF reports", len(find_files("pdf")))
 
     tab_csv, tab_pdf = st.tabs(["📁 csv", "📁 pdf"])
     with tab_csv:
