@@ -190,7 +190,7 @@ with st.sidebar:
   <div class="logo">BI</div>
   <div><div class="name">Business Intelligence</div><div class="tag">Insights Assistant</div></div>
 </div>
-<div class="side-label">Knowledge base</div>
+
 """,
         unsafe_allow_html=True,
     )
